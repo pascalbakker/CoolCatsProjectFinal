@@ -13,12 +13,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        public void sendMessage(View view) {
-            Intent intent = new Intent(this,HomePage.class);
-            EditText editText = (EditText) findViewById(R.id.HomePage);
-            String message = editText.getText().toString();
-            startActivity(intent);
-        }
+
     }
 
 }
