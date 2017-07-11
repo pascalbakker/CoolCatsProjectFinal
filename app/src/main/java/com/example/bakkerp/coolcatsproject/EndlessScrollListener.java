@@ -1,3 +1,5 @@
+package com.example.bakkerp.coolcatsproject;
+
 import android.widget.AbsListView;
 
 public abstract class EndlessScrollListener implements AbsListView.OnScrollListener {
