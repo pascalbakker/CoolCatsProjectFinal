@@ -1,6 +1,6 @@
 package com.example.bakkerp.coolcatsproject;
 
-import android.media.Image;
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 
 import java.io.Serializable;
@@ -11,17 +11,17 @@ import java.io.Serializable;
 
 public class DataClass implements Serializable {
     private String postTitle,postDate;
-    private Image postImage;
+    private Bitmap postImage;
     public DataClass(String postTitle,String postDate){
         this.postTitle=postTitle;
         this.postDate=postDate;
     }
-    public DataClass(String postTitle,String postDate,Image postImage){
+    public DataClass(String postTitle,String postDate,Bitmap postImage){
         this.postTitle=postTitle;
         this.postDate=postDate;
         this.postImage=postImage;
     }
-    public Image getImage(){
+    public Bitmap getImage(){
         return postImage;
     }
     public String getPostTitle(){
@@ -30,7 +30,7 @@ public class DataClass implements Serializable {
     public String getPostDate(){
         return postDate;
     }
-    public void setImage(Image newImage){
+    public void setImage(Bitmap newImage){
         this.postImage  = newImage;
     }
     public void setDate(String newDate){
