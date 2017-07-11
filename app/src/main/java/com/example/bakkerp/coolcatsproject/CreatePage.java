@@ -20,7 +20,7 @@ import java.io.InputStream;
  * Created by wahlstrome on 6/23/2017.
  */
 
-public class CreatePage extends AppCompatActivity
+public class CreatePage extends Navigation
 {
 
 
