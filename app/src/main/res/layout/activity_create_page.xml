@@ -8,12 +8,14 @@
         android:id="@+id/camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="79dp"
-        android:layout_marginTop="189dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="192dp"
         android:onClick="OnTakePhotoClicked"
-        android:text="Take Photo" />
+        android:text="Take Photo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
 
     <Button
         android:id="@+id/library"
@@ -21,9 +23,11 @@
         android:layout_height="wrap_content"
         android:onClick="onImageGalleryClicked"
         android:text="Get Photo"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
         android:layout_above="@+id/textInputLayout"
-        android:layout_toEndOf="@+id/camera" />
+        android:layout_toEndOf="@+id/camera"
+        android:layout_toRightOf="@+id/camera"/>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
@@ -37,13 +41,14 @@
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Date/Time" />
+            android:hint="Date/Time (MM/DD/YY)" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/textInputLayout"
         android:layout_marginTop="20dp">
 
@@ -55,13 +60,17 @@
         android:layout_height="350px"
         app:srcCompat="@android:drawable/ic_menu_edit"
         android:layout_above="@+id/library"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignEnd="@+id/library"
+        android:layout_alignRight="@+id/library"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp" />
 
     <EditText
         android:id="@+id/location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_below="@+id/camera"
         android:layout_marginTop="115dp"
         android:hint="Location" />
@@ -74,5 +83,5 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:onClick="onSubmissionClicked"
-        android:text="Submit" />
+        android:text="Submit"/>
 </RelativeLayout>
