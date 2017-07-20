@@ -2,7 +2,6 @@ package com.example.bakkerp.coolcatsproject;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -15,7 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-public class HomePage extends AppCompatActivity {
+public class NavDrawerActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
@@ -44,7 +43,7 @@ public class HomePage extends AppCompatActivity {
         // Populating ListView and Handling Selection
         Resources resources = getResources();
         mDrawerOptionLabels = resources.getStringArray(R.array.sliding_drawer_array);
-        ArrayAdapter<String> drawerAdapter = new ArrayAdapter<String>(this, R.layout.drawer_list_item, mDrawerOptionLabels);
+        ArrayAdapter<String> drawerAdapter = new ArrayAdapter<String>(this, 								R.layout.drawer_list_item, mDrawerOptionLabels);
 
         mDrawerListView.setAdapter(drawerAdapter);
 
@@ -54,25 +53,14 @@ public class HomePage extends AppCompatActivity {
 
                 FragmentManager fm = getFragmentManager();
                 Fragment fragment = new ViewPostsFragment();
-                Intent i;
+
                 switch(position){
                     case 0:
                         fragment = new ViewPostsFragment();
                         break;
                     case 1:
-                        i = new Intent(HomePage.this, CreatePage.class);
-                        startActivity(i);
+                        fragment = new ViewPostsFragment();
                         break;
-                    case 3:
-                        i = new Intent(HomePage.this, SavedPosts.class);
-                        startActivity(i);
-                        break;
-                    case 4:
-                        i = new Intent(HomePage.this, Settings.class);
-                        startActivity(i);
-                        break;
-
-
                 }
 
                 fm.beginTransaction().replace(R.id.content_frame, fragment).commit();
