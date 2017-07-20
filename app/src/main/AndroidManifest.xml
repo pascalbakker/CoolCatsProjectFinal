@@ -13,16 +13,14 @@
         android:theme="@style/AppTheme">
         <activity android:name=".CreatePage" />
         <activity
+            android:name=".LargePost"
+            android:label="" />
+        <activity
             android:name=".Settings"
             android:label="@string/title_activity_settings" />
         <activity
-            android:name=".Navigation"
-            android:label="@string/title_activity_navigation"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".HomePage"
-            android:label="@string/title_activity_home_page"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/title_activity_home_page">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
