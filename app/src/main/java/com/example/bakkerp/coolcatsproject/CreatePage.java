@@ -45,8 +45,10 @@ public class CreatePage extends AppCompatActivity
     private EditText tv1, tv2;
     private String date, loc;
     private Bitmap bitmap;
+    private String bitmapstring;
 
-
+    //String UPLOAD_URL = "http://httpbin.org/post";
+    String UPLOAD_URL = "http://18.220.32.41:3001/post";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -99,11 +101,12 @@ public class CreatePage extends AppCompatActivity
                 bitmap = (Bitmap) data.getExtras().get("data");
                 imgPic.setImageBitmap(bitmap);
             }
-
             tv1 = (EditText) findViewById(R.id.date);
             tv2 = (EditText) findViewById(R.id.location);
             date = tv1.getText().toString();
             loc = tv2.getText().toString();
+
+            onSubmissionClicked(tv1);
         }
     }
 
@@ -114,10 +117,11 @@ public class CreatePage extends AppCompatActivity
 
     }
 
-    public void onSubmissionClicked()
-    {
+    public void onSubmissionClicked(View v) {
+
         //Showing the progress dialog
         final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -125,44 +129,37 @@ public class CreatePage extends AppCompatActivity
                         //Disimissing the progress dialog
                         loading.dismiss();
                         //Showing toast message of the response
-                        Toast.makeText(CreatePage.this, s , Toast.LENGTH_LONG).show();
+                        Toast.makeText(CreatePage.this, s, Toast.LENGTH_LONG).show();
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        //Dismissing the progress dialog
-                        loading.dismiss();
-
-                        //Showing toast
-                        Toast.makeText(CreatePage.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
-          /*  @Override
+                }, new Response.ErrorListener() {
+            @Override public void onErrorResponse(VolleyError error) {
+                loading.dismiss();
+                //textView.setText("Something went wrong" + error.toString());
+                Toast.makeText(CreatePage.this, error.toString(), Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //Converting Bitmap to String
                 String image = getStringImage();
 
-                //Getting Image Name
-                String name = editTextName.getText().toString();
-
                 //Creating parameters
-                Map<String,String> params = new Hashtable<String, String>();
+                Map<String, String> params = new Hashtable<String, String>();
 
                 //Adding parameters
-                params.put(KEY_IMAGE, image);
-                params.put(KEY_NAME, name);
+                params.put("image", image);
+                params.put("date", date);
+                params.put("loc", loc);
 
                 //returning parameters
                 return params;
-            }*/
-
+            }
+        };
+/*
 
         //Creating a Request Queue
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
+*/
         //Adding request to the queue
         requestQueue.add(stringRequest);
     }

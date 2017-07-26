@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-
+//Home
 public class HomePage extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
@@ -53,7 +53,7 @@ public class HomePage extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 FragmentManager fm = getFragmentManager();
-                Fragment fragment = new ViewPostsFragment();
+                Fragment fragment = new Fragment();
                 Intent i;
                 switch(position){
                     case 0:
@@ -63,16 +63,9 @@ public class HomePage extends AppCompatActivity {
                         i = new Intent(HomePage.this, CreatePage.class);
                         startActivity(i);
                         break;
-                    case 3:
-                        i = new Intent(HomePage.this, SavedPosts.class);
-                        startActivity(i);
+                    case 2:
+                        fragment = new SavedPostsFragment();
                         break;
-                    case 4:
-                        i = new Intent(HomePage.this, Settings.class);
-                        startActivity(i);
-                        break;
-
-
                 }
 
                 fm.beginTransaction().replace(R.id.content_frame, fragment).commit();

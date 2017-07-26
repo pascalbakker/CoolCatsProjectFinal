@@ -3,6 +3,10 @@
     package="com.example.bakkerp.coolcatsproject">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -15,9 +19,6 @@
         <activity
             android:name=".LargePost"
             android:label="" />
-        <activity
-            android:name=".Settings"
-            android:label="@string/title_activity_settings" />
         <activity
             android:name=".HomePage"
             android:label="@string/title_activity_home_page">
