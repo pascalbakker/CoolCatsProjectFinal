@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="192dp"
+        android:onClick="OnTakePhotoClicked"
+        android:text="Take Photo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
+
+    <Button
+        android:id="@+id/library"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onImageGalleryClicked"
+        android:text="Get Photo"
+        android:layout_marginStart="31dp"
+        android:layout_marginLeft="31dp"
+        android:layout_above="@+id/textInputLayout"
+        android:layout_toEndOf="@+id/camera"
+        android:layout_toRightOf="@+id/camera"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/camera"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="37dp"
+        android:id="@+id/textInputLayout">
+
+        <EditText
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date/Time (MM/DD/YY)" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textInputLayout"
+        android:layout_marginTop="20dp">
+
+    </android.support.design.widget.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/imgPic"
+        android:layout_width="350px"
+        android:layout_height="350px"
+        app:srcCompat="@android:drawable/ic_menu_edit"
+        android:layout_above="@+id/library"
+        android:layout_alignEnd="@+id/library"
+        android:layout_alignRight="@+id/library"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp" />
+
+    <EditText
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/camera"
+        android:layout_marginTop="115dp"
+        android:hint="Location" />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/location"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:onClick="onSubmissionClicked"
+        android:text="Submit"/>
+</RelativeLayout>

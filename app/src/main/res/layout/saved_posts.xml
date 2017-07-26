@@ -1,0 +1,28 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.bakkerp.coolcatsproject.SavedPostsFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"/>
+
+    <ImageView
+        android:id="@+id/imageHolder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        />
+
+    <ListView
+        android:id="@+id/ListViewSaved"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="20dp"
+        android:numColumns="4"
+        android:verticalSpacing="5dp"
+        android:horizontalSpacing="5dp"
+        android:textAlignment="center" />
+
+</FrameLayout>
