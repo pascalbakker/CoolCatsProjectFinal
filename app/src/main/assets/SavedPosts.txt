@@ -1,2 +1,1 @@
 http://18.220.32.41:3001/image?name=10.png
-http://18.220.32.41:3001/image?name=9.png

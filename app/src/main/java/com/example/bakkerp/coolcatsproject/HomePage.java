@@ -3,6 +3,7 @@ package com.example.bakkerp.coolcatsproject;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +15,17 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+
 //Home
 public class HomePage extends AppCompatActivity {
 
@@ -27,6 +39,31 @@ public class HomePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
+        //Puts savedpost.txt in internal storage
+        AssetManager am = this.getAssets();
+        try {
+            InputStream inputStream = am.open("SavedPosts.txt");
+            File f = this.getFileStreamPath("SavedPostsInternal.txt");
+            OutputStream outputStream = new FileOutputStream(f);
+            ByteBuffer buffer = ByteBuffer.allocateDirect(1024 * 8);
+
+            ReadableByteChannel ich = Channels.newChannel(inputStream);
+            WritableByteChannel och = Channels.newChannel(outputStream);
+
+            while (ich.read(buffer) > -1 || buffer.position() > 0)
+            {
+                buffer.flip();
+                och.write(buffer);
+                buffer.compact();
+            }
+            ich.close();
+            och.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 

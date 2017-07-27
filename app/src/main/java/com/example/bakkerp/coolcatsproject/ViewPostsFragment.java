@@ -6,14 +6,25 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +37,7 @@ public class ViewPostsFragment extends Fragment {
     View rootView;
     ImageView imageView;
     Integer index;
+    String theUrl, postTitle, postDate;
 
 
     public ViewPostsFragment() {
@@ -113,15 +125,14 @@ public class ViewPostsFragment extends Fragment {
     private ListItem requestPost(){
         ViewPostsFragment context = this;
         ListItem newListItem = new ListItem();
-        index=10;
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;
         //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
-        String url ="http://18.220.32.41:3001/image?name="+index+".png";
+        //============
+        String url ="http://18.220.32.41:3001/image?name="+index.toString()+".png";
         Picasso.with(getActivity())
                 .load(url)
-                .resize(300,300)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
@@ -134,10 +145,44 @@ public class ViewPostsFragment extends Fragment {
 
                     }
                 });
+        final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String imageinfo_url ="http://18.220.32.41:3001/imageinfo?name=" + index.toString() + ".png";
+        StringRequest stringRequest = new StringRequest( Request.Method.GET, imageinfo_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //System.out.println(response);
+                        String[] array = response.split("\\|");
+                        //tv.setText(response);
+                        if( array.length >=5) {
+                            String imageName = array[0];
+                            String location = array[1];
+                            String date = array[2];
+                            String title = array[3];
+                            Log.v("title", title);
+                            String tag = array[4];
+                            postTitle = title;
+                            postDate = date;
+                            //System.out.println(imageName + "," + location + "," + date + "," + title + "," + tag);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //tv.setText("Something went wrong" + error.toString());
+                        postTitle = "Error";
+                        postDate = "Error";
+                    }
+                });
+
+        requestQueue.add(stringRequest);
+
         newListItem.image=currentImage;
-        newListItem.name = "Test"+index.toString();
-        newListItem.comment= "5/8/17";
+        newListItem.name = postTitle;
+        newListItem.comment= postDate;
         newListItem.url = url;
+        theUrl = newListItem.url;
         index++;
 
         return newListItem;
