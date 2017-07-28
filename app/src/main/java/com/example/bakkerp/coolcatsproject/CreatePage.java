@@ -11,7 +11,9 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,24 +40,115 @@ import java.util.Map;
 public class CreatePage extends AppCompatActivity
 {
 
-
     public static final int IMAGE_GALLERY_REQUEST = 1;
     public static final int CAMERA_REQUEST = 2;
+    public static final int CLOSE_REQUEST = 3;
     private ImageView imgPic;
-    private EditText tv1, tv2;
-    private String date, loc;
+    private EditText tv, tv1, tv2;
+    private String imgTitle, date, loc;
+    private Button btn1, btn2, btn3;
+    private ImageButton btnX;
     private Bitmap bitmap;
+    private String bitmapstring;
 
-
+    //String UPLOAD_URL = "http://httpbin.org/post";
+    String UPLOAD_URL = "http://18.220.32.41:3001/post";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_page);
+
+        imgPic = (ImageView)findViewById(R.id.imgPic);
+        btn1 = (Button) findViewById(R.id.camera);
+        btn2 = (Button) findViewById(R.id.library);
+        btn3 = (Button) findViewById(R.id.submit);
+        btnX = (ImageButton) findViewById(R.id.close);
+
+        btnX.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onClickClose();
+            }
+        });
+
+        btn1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                OnTakePhotoClicked(v);
+            }
+        });
+
+        btn2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onImageGalleryClicked(v);
+            }
+        });
+
+        btn3.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+
+                onSubmissionClicked();
+            }
+        });
     }
 
-    public void onImageGalleryClicked(View view)
-    {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK)
+        {
+            if(requestCode==IMAGE_GALLERY_REQUEST)
+            {
+                Uri imageUri = data.getData();
+                InputStream inputStream;
+                try
+                {
+                    inputStream= getApplicationContext().getContentResolver().openInputStream(imageUri);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    imgPic.setImageBitmap(bitmap);
+
+                }
+                catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                    Toast.makeText(CreatePage.this, "Unable to open Image", Toast.LENGTH_LONG).show();
+                }
+            }
+            else if(requestCode==CAMERA_REQUEST)
+            {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                imgPic.setImageBitmap(bitmap);
+            }
+            else if(requestCode==CLOSE_REQUEST)
+            {
+
+            }
+            tv = (EditText) findViewById(R.id.title);
+            tv1 = (EditText) findViewById(R.id.date);
+            tv2 = (EditText) findViewById(R.id.location);
+            imgTitle = tv.getText().toString();
+            date = tv1.getText().toString();
+            loc = tv2.getText().toString();
+        }
+    }
+
+    private void onClickClose() {
+
+    }
+
+    public void onImageGalleryClicked(View view) {
         Intent photoIntent = new Intent(Intent.ACTION_PICK);
 
         File picDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -68,56 +161,16 @@ public class CreatePage extends AppCompatActivity
         startActivityForResult(photoIntent, IMAGE_GALLERY_REQUEST);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        imgPic = (ImageView)findViewById(R.id.imgPic);
-        if(resultCode == RESULT_OK)
-        {
-            if(requestCode==IMAGE_GALLERY_REQUEST)
-            {
-                Uri imageUri = data.getData();
-
-                InputStream inputStream;
-
-                try {
-                    inputStream= getContentResolver().openInputStream(imageUri);
-
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-
-                    imgPic.setImageBitmap(bitmap);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Unable to open Image", Toast.LENGTH_LONG).show();
-
-                }
-            }
-            else if(requestCode==CAMERA_REQUEST)
-            {
-                bitmap = (Bitmap) data.getExtras().get("data");
-                imgPic.setImageBitmap(bitmap);
-            }
-
-            tv1 = (EditText) findViewById(R.id.date);
-            tv2 = (EditText) findViewById(R.id.location);
-            date = tv1.getText().toString();
-            loc = tv2.getText().toString();
-        }
-    }
-
-    public void OnTakePhotoClicked(View view)
-    {
+    public void OnTakePhotoClicked(View view) {
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(camera, CAMERA_REQUEST);
-
     }
 
-    public void onSubmissionClicked()
-    {
+    public void onSubmissionClicked() {
+
         //Showing the progress dialog
         final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
+        final RequestQueue requestQueue = Volley.newRequestQueue(this);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UPLOAD_URL,
                 new Response.Listener<String>() {
                     @Override
@@ -125,44 +178,38 @@ public class CreatePage extends AppCompatActivity
                         //Disimissing the progress dialog
                         loading.dismiss();
                         //Showing toast message of the response
-                        Toast.makeText(CreatePage.this, s , Toast.LENGTH_LONG).show();
+                        Toast.makeText(CreatePage.this, s, Toast.LENGTH_LONG).show();
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        //Dismissing the progress dialog
-                        loading.dismiss();
-
-                        //Showing toast
-                        Toast.makeText(CreatePage.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
-          /*  @Override
+                }, new Response.ErrorListener() {
+            @Override public void onErrorResponse(VolleyError error) {
+                loading.dismiss();
+                //textView.setText("Something went wrong" + error.toString());
+                Toast.makeText(CreatePage.this, error.toString(), Toast.LENGTH_LONG).show();
+            }
+        }) {
+            @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 //Converting Bitmap to String
                 String image = getStringImage();
 
-                //Getting Image Name
-                String name = editTextName.getText().toString();
-
                 //Creating parameters
-                Map<String,String> params = new Hashtable<String, String>();
+                Map<String, String> params = new Hashtable<String, String>();
 
                 //Adding parameters
-                params.put(KEY_IMAGE, image);
-                params.put(KEY_NAME, name);
+                params.put("image", image);
+                params.put("date", date);
+                params.put("location", loc);
+                params.put("title", imgTitle);
 
                 //returning parameters
                 return params;
-            }*/
-
+            }
+        };
+/*
 
         //Creating a Request Queue
         RequestQueue requestQueue = Volley.newRequestQueue(this);
-
+*/
         //Adding request to the queue
         requestQueue.add(stringRequest);
     }
@@ -176,3 +223,4 @@ public class CreatePage extends AppCompatActivity
     }
 
 }
+

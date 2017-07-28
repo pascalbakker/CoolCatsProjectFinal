@@ -17,15 +17,11 @@ import com.squareup.picasso.RequestCreator;
 
 import java.io.Serializable;
 
-/**
- * Created by bakkerp on 6/30/2017.
- */
-
-public class ListItem{
+public class ListItemSaved{
     public Bitmap image;
     public String name;
     public String comment;
-    public Button savePost;
+    public Button removePost;
     public String url;
 }
 
