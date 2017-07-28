@@ -131,7 +131,6 @@ public class ViewPostsFragment extends Fragment {
         //newListItem.image = bitmap;
         //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
         //============
-        currentImage= defaultImage;
         String url ="http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
         Picasso.with(getActivity())
                 .load(url)
