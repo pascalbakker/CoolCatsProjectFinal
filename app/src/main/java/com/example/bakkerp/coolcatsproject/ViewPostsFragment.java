@@ -36,8 +36,9 @@ public class ViewPostsFragment extends Fragment {
     ListView listView;
     View rootView;
     ImageView imageView;
-    Integer index;
     String theUrl, postTitle, postDate;
+    public String[] gallery = new String[100];
+    public Integer galleryIndex = 0;
 
 
     public ViewPostsFragment() {
@@ -52,7 +53,7 @@ public class ViewPostsFragment extends Fragment {
         imageView = (ImageView) getActivity().findViewById(R.id.imgPic);
         //The list of items being put into list
         list = new ArrayList<ListItem>();
-        index=0;
+        getGalleryList();
 
 
         //Initialize adapter for GridView
@@ -63,7 +64,6 @@ public class ViewPostsFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_view_posts, container, false);
         listView = (ListView) rootView.findViewById(R.id.ListView01);
         imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
-        startListView();
 
         listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 
@@ -79,6 +79,9 @@ public class ViewPostsFragment extends Fragment {
             }
         });
         listView.setAdapter(adapter);
+        startListView();
+
+
         listView.setOnScrollListener(new EndlessScrollListener() {
             @Override
             public boolean onLoadMore(int page, int totalItemsCount) {
@@ -103,26 +106,24 @@ public class ViewPostsFragment extends Fragment {
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyDataSetChanged()`
-        list.add(requestPost());
-        /*
-        ListItem item1 = new ListItem();
-        item1.image = defaultImage;
-        item1.name = "David";
-        item1.comment = "Boston is not snowing now.";
-        list.add(item1);
-        */
+        if(galleryIndex>=gallery.length) {
+            return;
+        }
+        requestPost();
         adapter.notifyDataSetChanged();
+        Log.d("Gallery Index: ", galleryIndex.toString());
     }
 
     private void startListView(){
-        for(int i=0;i<1;i++){
-            list.add(requestPost());
-            adapter.notifyDataSetChanged();
+        if(galleryIndex>=gallery.length) {
+            return;
         }
+        requestPost();
         adapter.notifyDataSetChanged();
+
     }
 
-    private ListItem requestPost(){
+    private void requestPost(){
         ViewPostsFragment context = this;
         ListItem newListItem = new ListItem();
         //imageView.buildDrawingCache();
@@ -130,7 +131,8 @@ public class ViewPostsFragment extends Fragment {
         //newListItem.image = bitmap;
         //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
         //============
-        String url ="http://18.220.32.41:3001/image?name="+index.toString()+".png";
+        currentImage= defaultImage;
+        String url ="http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
         Picasso.with(getActivity())
                 .load(url)
                 .into(imageView, new Callback() {
@@ -142,11 +144,13 @@ public class ViewPostsFragment extends Fragment {
 
                     @Override
                     public void onError() {
-
+                        Log.v("Index: ", galleryIndex.toString());
+                        currentImage= defaultImage;
                     }
                 });
-        final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        String imageinfo_url ="http://18.220.32.41:3001/imageinfo?name=" + index.toString() + ".png";
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String imageinfo_url ="http://18.220.32.41:3001/imageinfo?name=" + gallery[galleryIndex];
+        postTitle = "No link";
         StringRequest stringRequest = new StringRequest( Request.Method.GET, imageinfo_url,
                 new Response.Listener<String>() {
                     @Override
@@ -155,11 +159,11 @@ public class ViewPostsFragment extends Fragment {
                         String[] array = response.split("\\|");
                         //tv.setText(response);
                         if( array.length >=5) {
+                            Log.d("Getting info","Yes");
                             String imageName = array[0];
                             String location = array[1];
                             String date = array[2];
                             String title = array[3];
-                            Log.v("title", title);
                             String tag = array[4];
                             postTitle = title;
                             postDate = date;
@@ -171,21 +175,47 @@ public class ViewPostsFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //tv.setText("Something went wrong" + error.toString());
-                        postTitle = "Error";
-                        postDate = "Error";
+                        postTitle = "Could Not Load Title";
+                        postDate = "Could Not Load Date";
                     }
                 });
 
         requestQueue.add(stringRequest);
-
+        if(postTitle.equals("")){
+            return;
+        }
         newListItem.image=currentImage;
         newListItem.name = postTitle;
         newListItem.comment= postDate;
         newListItem.url = url;
         theUrl = newListItem.url;
-        index++;
-
-        return newListItem;
+        galleryIndex++;
+        list.add(newListItem);
     }
+
+    private void getGalleryList(){
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String gallerylist_url ="http://18.220.32.41:3001/gallerylist";
+        StringRequest stringRequest = new StringRequest( Request.Method.GET, gallerylist_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //System.out.println(response);
+                        gallery = response.split("\\|");
+                        //tv.setText(response);
+                        //galleryIndex=0;
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //tv.setText("Something went wrong" + error.toString());
+                    }
+                });
+
+        requestQueue.add(stringRequest);
+    }
+
 }
 
