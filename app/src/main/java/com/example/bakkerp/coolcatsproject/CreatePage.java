@@ -201,6 +201,7 @@ public class CreatePage extends AppCompatActivity
                 params.put("location", loc);
                 params.put("title", imgTitle);
 
+
                 //returning parameters
                 return params;
             }
