@@ -1,6 +1,7 @@
 package com.example.bakkerp.coolcatsproject;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,10 +9,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,30 +39,120 @@ import java.util.Map;
 /**
  * Created by wahlstrome on 6/23/2017.
  */
-
 public class CreatePage extends AppCompatActivity
 {
-
-
     public static final int IMAGE_GALLERY_REQUEST = 1;
     public static final int CAMERA_REQUEST = 2;
     private ImageView imgPic;
-    private EditText tv1, tv2;
-    private String date, loc;
+    private EditText tv, tv1, tv2;
+    private String imgTitle, date, loc;
+    private Button btn1, btn2, btn3;
+    private ImageButton btnX;
     private Bitmap bitmap;
-    private String bitmapstring;
 
-    //String UPLOAD_URL = "http://httpbin.org/post";
     String UPLOAD_URL = "http://18.220.32.41:3001/post";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_page);
+
+        imgPic = (ImageView)findViewById(R.id.imgPic);
+        btn1 = (Button) findViewById(R.id.camera);
+        btn2 = (Button) findViewById(R.id.library);
+        btn3 = (Button) findViewById(R.id.submit);
+        btnX = (ImageButton) findViewById(R.id.close);
+
+        btnX.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onClickClose();
+            }
+        });
+
+        btn1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                OnTakePhotoClicked(v);
+            }
+        });
+
+        btn2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onImageGalleryClicked(v);
+            }
+        });
+
+        btn3.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                onSubmissionClicked();
+            }
+        });
     }
 
-    public void onImageGalleryClicked(View view)
-    {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK)
+        {
+            if(requestCode==IMAGE_GALLERY_REQUEST)
+            {
+                Uri imageUri = data.getData();
+                InputStream inputStream;
+                try
+                {
+                    inputStream= getApplicationContext().getContentResolver().openInputStream(imageUri);
+                    bitmap = BitmapFactory.decodeStream(inputStream);
+                    imgPic.setImageBitmap(bitmap);
+
+                }
+                catch (FileNotFoundException e)
+                {
+                    e.printStackTrace();
+                    Toast.makeText(CreatePage.this, "Unable to open Image", Toast.LENGTH_LONG).show();
+                }
+            }
+            else if(requestCode==CAMERA_REQUEST)
+            {
+                bitmap = (Bitmap) data.getExtras().get("data");
+                imgPic.setImageBitmap(bitmap);
+            }
+        }
+    }
+
+    private void onClickClose() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreatePage.this);
+        builder.setTitle("Are you sure you want to close?");
+
+        builder.setPositiveButton("YES",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(CreatePage.this, HomePage.class);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("NO",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create();
+        builder.show();
+    }
+
+    public void onImageGalleryClicked(View view) {
         Intent photoIntent = new Intent(Intent.ACTION_PICK);
 
         File picDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -70,55 +165,20 @@ public class CreatePage extends AppCompatActivity
         startActivityForResult(photoIntent, IMAGE_GALLERY_REQUEST);
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        imgPic = (ImageView)findViewById(R.id.imgPic);
-        if(resultCode == RESULT_OK)
-        {
-            if(requestCode==IMAGE_GALLERY_REQUEST)
-            {
-                Uri imageUri = data.getData();
-
-                InputStream inputStream;
-
-                try {
-                    inputStream= getContentResolver().openInputStream(imageUri);
-
-                    bitmap = BitmapFactory.decodeStream(inputStream);
-
-                    imgPic.setImageBitmap(bitmap);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Unable to open Image", Toast.LENGTH_LONG).show();
-
-                }
-            }
-            else if(requestCode==CAMERA_REQUEST)
-            {
-                bitmap = (Bitmap) data.getExtras().get("data");
-                imgPic.setImageBitmap(bitmap);
-            }
-            tv1 = (EditText) findViewById(R.id.date);
-            tv2 = (EditText) findViewById(R.id.location);
-            date = tv1.getText().toString();
-            loc = tv2.getText().toString();
-
-            onSubmissionClicked(tv1);
-        }
-    }
-
-    public void OnTakePhotoClicked(View view)
-    {
+    public void OnTakePhotoClicked(View view) {
         Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(camera, CAMERA_REQUEST);
-
     }
 
-    public void onSubmissionClicked(View v) {
+    public void onSubmissionClicked() {
 
+
+        tv = (EditText) findViewById(R.id.title);
+        tv1 = (EditText) findViewById(R.id.date);
+        tv2 = (EditText) findViewById(R.id.location);
+        imgTitle = tv.getText().toString();
+        date = tv1.getText().toString();
+        loc = tv2.getText().toString();
         //Showing the progress dialog
         final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -149,7 +209,8 @@ public class CreatePage extends AppCompatActivity
                 //Adding parameters
                 params.put("image", image);
                 params.put("date", date);
-                params.put("loc", loc);
+                params.put("location", loc);
+                params.put("title", imgTitle);
 
                 //returning parameters
                 return params;
@@ -162,6 +223,9 @@ public class CreatePage extends AppCompatActivity
 */
         //Adding request to the queue
         requestQueue.add(stringRequest);
+
+        Intent intent = new Intent(CreatePage.this, HomePage.class);
+        startActivity(intent);
     }
 
     public String getStringImage(){
@@ -171,5 +235,4 @@ public class CreatePage extends AppCompatActivity
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;
     }
-
 }
