@@ -3,6 +3,8 @@ package com.example.bakkerp.coolcatsproject;
 import android.app.LauncherActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -21,6 +27,7 @@ import java.util.List;
 
 public class ListObject extends ArrayAdapter<ListItem> {
     private LayoutInflater mInflater;
+    private String itemURL;
     public ListObject(Context context, int rid, List<ListItem> list){
         super(context, rid, list);
         mInflater =
@@ -28,8 +35,12 @@ public class ListObject extends ArrayAdapter<ListItem> {
     }
     public View getView(int position, View convertView, ViewGroup parent){
         // Retrieve data
-        ListItem item = (ListItem)getItem(position);
-        final String itemURL = item.url;
+        final ListItem item = (ListItem)getItem(position);
+        itemURL = item.url;
+        if(itemURL==null){
+            Log.v("Error ","url is null");
+            itemURL="ayy";
+        }
         // Use layout file to generate View
         View view = mInflater.inflate(R.layout.list_item, null);
         // Set image
@@ -48,7 +59,18 @@ public class ListObject extends ArrayAdapter<ListItem> {
         saveButton = (Button) view.findViewById(R.id.savePost);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SavedPostsFragment.add(itemURL);
+                try {
+                    Log.d("Writing","Post url saved to txt");
+                    File f = v.getContext().getFileStreamPath("SavedPostsInternal.txt");
+                    FileWriter fw = new FileWriter(f,true);
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    bw.write(itemURL);
+                    bw.newLine();
+                    bw.close();
+                    fw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
         item.savePost = saveButton;

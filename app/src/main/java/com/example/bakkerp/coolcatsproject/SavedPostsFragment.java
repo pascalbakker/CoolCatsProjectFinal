@@ -1,6 +1,7 @@
 package com.example.bakkerp.coolcatsproject;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.InputStream;
 import java.util.List;
 import android.app.Fragment;
 
@@ -37,12 +40,13 @@ import java.util.ArrayList;
 public class SavedPostsFragment extends Fragment {
     Bitmap defaultImage;
     Bitmap currentImage;
-    ListObject adapter;
-    List<ListItem> listSaved;
+    ListObjectSaved adapter;
+    List<ListItemSaved> listSaved;
     ListView  listViewSaved;
     View rootView;
     ImageView imageView;
     Integer index;
+    String itemURL;
     FileOutputStream outputStream;
     File file = new File("savedPosts.text");
 
@@ -55,19 +59,21 @@ public class SavedPostsFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.v("Fragment: ","SavedPosts has started.");
         defaultImage = BitmapFactory.decodeResource(getResources(), R.drawable.download);
-        imageView = (ImageView) getActivity().findViewById(R.id.imgPic);
+        imageView = (ImageView) getActivity().findViewById(R.id.imageHolder);
         //The list of items being put into list
-        listSaved = new ArrayList<ListItem>();
+        listSaved = new ArrayList<ListItemSaved>();
         index=0;
 
 
         //Initialize adapter for GridView
-        adapter = new ListObject(getActivity(), 0 ,listSaved);
+        adapter = new ListObjectSaved(getActivity(), 0 ,listSaved);
         ListItem newListItem = new ListItem();
 
         /* Initialize Gridview */
         rootView = inflater.inflate(R.layout.saved_posts, container, false);
         listViewSaved = (ListView) rootView.findViewById(R.id.ListViewSaved);
+        imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
+
         try {
             startListView();
             Log.d("Savedposts","Completed loading saved posts");
@@ -79,7 +85,7 @@ public class SavedPostsFragment extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ListItem itemToDisplay = (ListItem) parent.getItemAtPosition(position);
+                ListItemSaved itemToDisplay = (ListItemSaved) parent.getItemAtPosition(position);
                 //LargePost largePost = new LargePost(itemToDisplay.image,itemToDisplay.name,itemToDisplay.comment);
 
                 Intent i = new Intent(getActivity(), LargePost.class);
@@ -88,6 +94,8 @@ public class SavedPostsFragment extends Fragment {
                 startActivity(i);
             }
         });
+
+
         listViewSaved.setAdapter(adapter);
 
         // Inflate the layout for this fragment
@@ -98,70 +106,26 @@ public class SavedPostsFragment extends Fragment {
         loadUrRLs();
     }
 
-
-//https://stackoverflow.com/questions/24291721/reading-a-text-file-line-by-line-in-android
-    public static void add(String url){
-        try
-        {
-            File file = new File("savedPosts.text");
-            file.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(file);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            myOutWriter.append(url);
-
-            myOutWriter.close();
-
-            fOut.flush();
-            fOut.close();
-        }
-        catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }
-    }
-
-
-    //https://stackoverflow.com/questions/1377279/find-a-line-in-a-file-and-remove-it
-    public void delete(String url) throws IOException {
-        File inputFile = new File("savedPosts.text");
-        File tempFile = new File("myTempPosts.text");
-
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-        String currentLine;
-
-        while((currentLine = reader.readLine()) != "") {
-            // trim newline when comparing with lineToRemove
-            String trimmedLine = currentLine.trim();
-            if(trimmedLine.equals(url)) continue;
-            writer.write(currentLine + System.getProperty("line.separator"));
-        }
-        writer.close();
-        reader.close();
-        boolean successful = tempFile.renameTo(inputFile);
-    }
-
     public void loadUrRLs() throws IOException {
-        FileInputStream is;
         BufferedReader reader;
-        final File file = new File(Environment.getExternalStorageDirectory().getPath(),"SavedPosts.txt");
-        Log.d("File exists? ","Testing "+file.exists());
-        if (file.exists()) {
-            is = new FileInputStream(file);
-            reader = new BufferedReader(new InputStreamReader(is));
-            String line = reader.readLine();
-            Log.v("","test"+(line!=null));
-            while(line != null){
-                Log.d("StackOverflow", line);
-                line = reader.readLine();
-                addItem(line);
+        File f = getActivity().getFileStreamPath("SavedPostsInternal.txt");
+        FileReader fr = new FileReader(f);
+        reader = new BufferedReader(fr);
+        // new File("file:///android.asset/xxx.txt")
+        String mLine;
+        while((mLine = reader.readLine()) != null){
+            Log.v("Read Line: ",mLine);
+            try{
+                addItem(mLine);
+            }catch (Exception e){
+                Log.e("Loading image in save",e.toString());
+                Log.v("Error ","Could not load saved url");
             }
         }
-
     }
 
     public void addItem(String url){
-        ListItem newListItem = new ListItem();
+        ListItemSaved newListItem = new ListItemSaved();
         Picasso.with(getActivity())
                 .load(url)
                 .resize(300,300)
@@ -174,6 +138,8 @@ public class SavedPostsFragment extends Fragment {
                     @Override
                     public void onError() {
                         currentImage = defaultImage;
+                        Log.v("Error ","using default image");
+
 
                     }
                 });
@@ -181,6 +147,7 @@ public class SavedPostsFragment extends Fragment {
         newListItem.name = "Test111"+index.toString();
         newListItem.comment= "2/2/21";
         newListItem.url = url;
+        itemURL = newListItem.url;
         listSaved.add(newListItem);
         adapter.notifyDataSetChanged();
     }

@@ -6,14 +6,25 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +36,9 @@ public class ViewPostsFragment extends Fragment {
     ListView listView;
     View rootView;
     ImageView imageView;
-    Integer index;
+    String theUrl, postTitle, postDate, postLocation;
+    public String[] gallery = new String[100];
+    public Integer galleryIndex = 0;
 
 
     public ViewPostsFragment() {
@@ -40,45 +53,67 @@ public class ViewPostsFragment extends Fragment {
         imageView = (ImageView) getActivity().findViewById(R.id.imgPic);
         //The list of items being put into list
         list = new ArrayList<ListItem>();
-        index=0;
-
-
-        //Initialize adapter for GridView
-        adapter = new ListObject(getActivity(), 0 , list);
-        ListItem newListItem = new ListItem();
-
-        /* Initialize Gridview */
         rootView = inflater.inflate(R.layout.fragment_view_posts, container, false);
-        listView = (ListView) rootView.findViewById(R.id.ListView01);
-        imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
-        startListView();
+        //getGalleryList();
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String gallerylist_url ="http://18.220.32.41:3001/gallerylist";
+        StringRequest stringRequest = new StringRequest( Request.Method.GET, gallerylist_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //System.out.println(response);
+                        gallery = response.split("\\|");
+                        //tv.setText(response);
+                        galleryIndex=0;
+                        System.out.println("GetGallery:" + gallery.length);
+                        //Initialize adapter for GridView
+                        adapter = new ListObject(getActivity(), 0 , list);
+                        ListItem newListItem = new ListItem();
 
-        listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+                        /* Initialize Gridview */
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ListItem itemToDisplay = (ListItem) parent.getItemAtPosition(position);
-                //LargePost largePost = new LargePost(itemToDisplay.image,itemToDisplay.name,itemToDisplay.comment);
+                        listView = (ListView) rootView.findViewById(R.id.ListView01);
+                        imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
 
-                Intent i = new Intent(getActivity(), LargePost.class);
-                i.putExtra("MyClass", itemToDisplay.url);
+                        listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 
-                startActivity(i);
-            }
-        });
-        listView.setAdapter(adapter);
-        listView.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
-                loadNextDataFromApi(page);
-                // or loadNextDataFromApi(totalItemsCount);
-                adapter.notifyDataSetChanged();
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                ListItem itemToDisplay = (ListItem) parent.getItemAtPosition(position);
+                                //LargePost largePost = new LargePost(itemToDisplay.image,itemToDisplay.name,itemToDisplay.comment);
 
-                return true; // ONLY if more data is actually being loaded; false otherwise.
-            }
-        });
+                                Intent i = new Intent(getActivity(), LargePost.class);
+                                i.putExtra("MyClass", itemToDisplay.url);
+
+                                startActivity(i);
+                            }
+                        });
+                        listView.setAdapter(adapter);
+                        startListView();
+
+
+                        listView.setOnScrollListener(new EndlessScrollListener() {
+                            @Override
+                            public boolean onLoadMore(int page, int totalItemsCount) {
+                                // Triggered only when new data needs to be appended to the list
+                                // Add whatever code is needed to append new items to your AdapterView
+                                loadNextDataFromApi(page);
+                                // or loadNextDataFromApi(totalItemsCount);
+                                adapter.notifyDataSetChanged();
+
+                                return true; // ONLY if more data is actually being loaded; false otherwise.
+                            }
+                        });
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //tv.setText("Something went wrong" + error.toString());
+                    }
+                });
+        requestQueue.add(stringRequest);
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -91,56 +126,152 @@ public class ViewPostsFragment extends Fragment {
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyDataSetChanged()`
-        list.add(requestPost());
-        /*
-        ListItem item1 = new ListItem();
-        item1.image = defaultImage;
-        item1.name = "David";
-        item1.comment = "Boston is not snowing now.";
-        list.add(item1);
-        */
+        if(galleryIndex>=gallery.length-1) {
+            return;
+        }
+        requestPost();
         adapter.notifyDataSetChanged();
+        Log.v("Gallery Index: ", galleryIndex.toString());
     }
 
     private void startListView(){
-        for(int i=0;i<1;i++){
-            list.add(requestPost());
-            adapter.notifyDataSetChanged();
+        if(galleryIndex>=gallery.length-1) {
+            return;
         }
+        requestPost();
         adapter.notifyDataSetChanged();
+
     }
 
-    private ListItem requestPost(){
+    private void requestPost(){
         ViewPostsFragment context = this;
-        ListItem newListItem = new ListItem();
-        index=10;
+
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;
         //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
-        String url ="http://18.220.32.41:3001/image?name="+index+".png";
+        //============
+
+        String url ="http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
+        System.out.println(url);
         Picasso.with(getActivity())
                 .load(url)
-                .resize(300,300)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
-                        // Drawable is ready
-                        currentImage = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                        //if( galleryIndex < gallery.length-1) {
+                            // Drawable is ready
+                            currentImage = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                            RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+                            String imageinfo_url ="http://18.220.32.41:3001/imageinfo?name=" + gallery[galleryIndex]; //Image info url
+                            postTitle = "No link";
+                            StringRequest stringRequest = new StringRequest( Request.Method.GET, imageinfo_url,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            //System.out.println(response);
+                                            String[] array = response.split("\\|");
+                                            //tv.setText(response);
+                                            if( array.length >=5) {
+                                                Log.d("Getting info","Yes");
+                                                String imageName = array[0];
+                                                String location = array[1];
+                                                String date = array[2];
+                                                String title = array[3];
+                                                String tag = array[4];
+                                                postTitle = title;
+                                                postDate = date;
+                                                postLocation = location;
+                                                if( galleryIndex < gallery.length-1)
+                                                    galleryIndex++;
+                                                //System.out.println(imageName + "," + location + "," + date + "," + title + "," + tag);
+                                                ListItem newListItem = new ListItem();
+                                                newListItem.image = currentImage;
+                                                newListItem.name = postTitle;
+                                                newListItem.comment = postDate;
+                                                newListItem.url = "http://18.220.32.41:3001/image?name=" + gallery[galleryIndex];
+                                                theUrl = newListItem.url;
+                                                //galleryIndex++;
+                                                list.add(newListItem);
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            //tv.setText("Something went wrong" + error.toString());
+                                            postTitle = "Could Not Load Title";
+                                            postDate = "Could Not Load Date";
+                                            postLocation = "No Location";
+                                        }
+                                    });
+
+                            requestQueue.add(stringRequest);
+
+                       // }
                     }
 
                     @Override
                     public void onError() {
+                        Log.v("Index: ", galleryIndex.toString());
+
+                        currentImage= defaultImage;
+
+                        ListItem newListItem = new ListItem();
+                        newListItem.image=currentImage;
+                        newListItem.name = postTitle;
+                        newListItem.comment= postDate;
+                        newListItem.url = "None";
+                        theUrl = newListItem.url;
+                        list.add(newListItem);
+
+                        adapter.notifyDataSetChanged();
 
                     }
                 });
-        newListItem.image=currentImage;
-        newListItem.name = "Test"+index.toString();
-        newListItem.comment= "5/8/17";
-        newListItem.url = url;
-        index++;
 
-        return newListItem;
+       /* if(postTitle.equals("")){
+            return;
+        }*/
+        /*DD
+        currentImage= defaultImage;
+        ListItem newListItem = new ListItem();
+        newListItem.image=currentImage;
+        newListItem.name = postTitle;
+        newListItem.comment= postDate;
+        newListItem.url = "None";
+        theUrl = newListItem.url;
+        list.add(newListItem);
+        adapter.notifyDataSetChanged();
+        */
+
     }
+
+    private void getGalleryList(){
+        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+        String gallerylist_url ="http://18.220.32.41:3001/gallerylist";
+        StringRequest stringRequest = new StringRequest( Request.Method.GET, gallerylist_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        //System.out.println(response);
+                        gallery = response.split("\\|");
+                        //tv.setText(response);
+                        galleryIndex=0;
+                        System.out.println("GetGallery:" + gallery.length);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //tv.setText("Something went wrong" + error.toString());
+                    }
+                });
+
+        requestQueue.add(stringRequest);
+    }
+
 }
 
