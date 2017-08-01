@@ -1,6 +1,7 @@
 package com.example.bakkerp.coolcatsproject;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +28,7 @@ import java.util.List;
 public class LargePost extends AppCompatActivity implements Serializable{
     private Bitmap currentImage;
     private String titleTitleFromPost;
+    private ImageButton back;
     public LargePost() {
 
     }
@@ -36,12 +39,21 @@ public class LargePost extends AppCompatActivity implements Serializable{
         setContentView(R.layout.large_post);
         String url = (String) getIntent().getSerializableExtra("MyClass");
         ImageView imageView = (ImageView) findViewById(R.id.postImage);
+        back = (ImageButton) findViewById(R.id.back);
+
 
         Picasso.with(this)
                 .load(url)
                 .resize(300,300)
                 .into(imageView);
 
+    }
+
+
+    public void onClickBack(View view)
+    {
+        Intent intent = new Intent(this, HomePage.class);
+        startActivity(intent);
     }
 
 }
