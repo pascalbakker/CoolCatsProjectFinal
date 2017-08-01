@@ -1,53 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="80dp"
-    android:layout_height="match_parent"
-    android:layout_alignParentRight="true">
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:layout_alignParentRight="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical"
-        android:layout_alignParentLeft="true">
-
-        <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/comment"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textAlignment="center"
-            android:textSize="14sp" />
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="376dp" />
+            android:layout_width="201dp"
+            android:layout_height="235dp"
+            android:paddingRight="20dp" />
 
-        <Button
-            android:id="@+id/savePost"
-            style="@style/Widget.AppCompat.Button.Colored"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
             android:layout_weight="1"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
-            android:text="Save" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="0.09"
+                android:gravity="bottom|center"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/comment"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_weight="0.07"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/savePost"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="Save" />
 
 </LinearLayout>

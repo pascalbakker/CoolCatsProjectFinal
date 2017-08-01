@@ -39,7 +39,6 @@ public class ListObject extends ArrayAdapter<ListItem> {
         itemURL = item.url;
         if(itemURL==null){
             Log.v("Error ","url is null");
-            itemURL="ayy";
         }
         // Use layout file to generate View
         View view = mInflater.inflate(R.layout.list_item, null);
@@ -60,7 +59,7 @@ public class ListObject extends ArrayAdapter<ListItem> {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    Log.d("Writing","Post url saved to txt");
+                    Log.d("Writing",item.url);
                     File f = v.getContext().getFileStreamPath("SavedPostsInternal.txt");
                     FileWriter fw = new FileWriter(f,true);
                     BufferedWriter bw = new BufferedWriter(fw);

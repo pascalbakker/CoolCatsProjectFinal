@@ -14,6 +14,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -47,6 +54,8 @@ public class SavedPostsFragment extends Fragment {
     ImageView imageView;
     Integer index;
     String itemURL;
+    String aUrl, postTitle, postDate, postLocation, theUrl;
+
     FileOutputStream outputStream;
     File file = new File("savedPosts.text");
 
@@ -59,7 +68,6 @@ public class SavedPostsFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.v("Fragment: ","SavedPosts has started.");
         defaultImage = BitmapFactory.decodeResource(getResources(), R.drawable.download);
-        imageView = (ImageView) getActivity().findViewById(R.id.imageHolder);
         //The list of items being put into list
         listSaved = new ArrayList<ListItemSaved>();
         index=0;
@@ -72,7 +80,7 @@ public class SavedPostsFragment extends Fragment {
         /* Initialize Gridview */
         rootView = inflater.inflate(R.layout.saved_posts, container, false);
         listViewSaved = (ListView) rootView.findViewById(R.id.ListViewSaved);
-        imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
+        imageView = (ImageView) rootView.findViewById(R.id.imageHolder2);
 
         try {
             startListView();
@@ -113,10 +121,14 @@ public class SavedPostsFragment extends Fragment {
         reader = new BufferedReader(fr);
         // new File("file:///android.asset/xxx.txt")
         String mLine;
-        while((mLine = reader.readLine()) != null){
-            Log.v("Read Line: ",mLine);
+        mLine = reader.readLine();
+        System.out.print(mLine);
+        while(mLine != null){
+            Log.d("Read Line: ",mLine);
             try{
-                addItem(mLine);
+                requestPost(mLine);
+                mLine = reader.readLine();
+
             }catch (Exception e){
                 Log.e("Loading image in save",e.toString());
                 Log.v("Error ","Could not load saved url");
@@ -124,33 +136,95 @@ public class SavedPostsFragment extends Fragment {
         }
     }
 
-    public void addItem(String url){
-        ListItemSaved newListItem = new ListItemSaved();
+
+    private void requestPost(String galleryURL){
+        SavedPostsFragment context = this;
+        aUrl = galleryURL;
+
+        //imageView.buildDrawingCache();
+        //Bitmap bitmap = imageView.getDrawingCache();
+        //newListItem.image = bitmap;
+        //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
+        //============
+
+        theUrl ="http://18.220.32.41:3001/image?name="+ galleryURL;
+        Log.d("URL Pulled: ",theUrl);
         Picasso.with(getActivity())
-                .load(url)
-                .resize(300,300)
+                .load(theUrl)
                 .into(imageView, new Callback() {
                     @Override
                     public void onSuccess() {
+                        //if( galleryIndex < gallery.length-1) {
                         // Drawable is ready
                         currentImage = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+
+                        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
+                        String imageinfo_url ="http://18.220.32.41:3001/imageinfo?name=" + aUrl; //Image info url
+                        postTitle = "No link";
+                        StringRequest stringRequest = new StringRequest( Request.Method.GET, imageinfo_url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        //System.out.println(response);
+                                        String[] array = response.split("\\|");
+                                        //tv.setText(response);
+                                        if( array.length >=5) {
+                                            Log.d("Getting info","Yes");
+                                            String imageName = array[0];
+                                            String location = array[1];
+                                            String date = array[2];
+                                            String title = array[3];
+                                            String tag = array[4];
+                                            postTitle = title;
+                                            postDate = date;
+                                            postLocation = location;
+                                            ListItemSaved newListItem = new ListItemSaved();
+                                            newListItem.image = currentImage;
+                                            newListItem.name = postTitle;
+                                            newListItem.comment = postDate;
+                                            newListItem.url = aUrl;
+                                            listSaved.add(newListItem);
+                                            adapter.notifyDataSetChanged();
+                                            //System.out.println(imageName + "," + location + "," + date + "," + title + "," + tag);
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        //tv.setText("Something went wrong" + error.toString());
+                                        postTitle = "Could Not Load Title";
+                                        postDate = "Could Not Load Date";
+                                        postLocation = "No Location";
+                                    }
+                                });
+
+                        requestQueue.add(stringRequest);
+
+                        // }
+
                     }
+
                     @Override
                     public void onError() {
-                        currentImage = defaultImage;
-                        Log.v("Error ","using default image");
 
+                        currentImage= defaultImage;
+
+                        ListItemSaved newListItem = new ListItemSaved();
+                        newListItem.image=currentImage;
+                        newListItem.name = postTitle;
+                        newListItem.comment= postDate;
+                        newListItem.url = "None";
+                        //theUrl = newListItem.url;
+                        listSaved.add(newListItem);
+
+                        adapter.notifyDataSetChanged();
 
                     }
                 });
-        newListItem.image=currentImage;
-        newListItem.name = "Test111"+index.toString();
-        newListItem.comment= "2/2/21";
-        newListItem.url = url;
-        itemURL = newListItem.url;
-        listSaved.add(newListItem);
-        adapter.notifyDataSetChanged();
+        imageView.setImageBitmap(defaultImage);
     }
+
 }
 
 

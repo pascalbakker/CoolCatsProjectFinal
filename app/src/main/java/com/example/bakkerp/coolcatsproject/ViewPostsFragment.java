@@ -145,7 +145,7 @@ public class ViewPostsFragment extends Fragment {
 
     private void requestPost(){
         ViewPostsFragment context = this;
-
+        theUrl = gallery[galleryIndex];
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;
@@ -182,18 +182,20 @@ public class ViewPostsFragment extends Fragment {
                                                 postTitle = title;
                                                 postDate = date;
                                                 postLocation = location;
-                                                if( galleryIndex < gallery.length-1)
-                                                    galleryIndex++;
+
+
                                                 //System.out.println(imageName + "," + location + "," + date + "," + title + "," + tag);
                                                 ListItem newListItem = new ListItem();
                                                 newListItem.image = currentImage;
                                                 newListItem.name = postTitle;
                                                 newListItem.comment = postDate;
-                                                newListItem.url = "http://18.220.32.41:3001/image?name=" + gallery[galleryIndex];
-                                                theUrl = newListItem.url;
+                                                newListItem.url = theUrl;
                                                 //galleryIndex++;
                                                 list.add(newListItem);
                                                 adapter.notifyDataSetChanged();
+                                                if( galleryIndex < gallery.length-1) {
+                                                    galleryIndex++;
+                                                }
                                             }
                                         }
                                     },
