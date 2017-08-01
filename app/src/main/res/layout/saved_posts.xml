@@ -10,10 +10,9 @@
         android:gravity="center"/>
 
     <ImageView
-        android:id="@+id/imageHolder"
+        android:id="@+id/imageHolder2"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        />
+        android:layout_height="0dp" />
 
     <ListView
         android:id="@+id/ListViewSaved"

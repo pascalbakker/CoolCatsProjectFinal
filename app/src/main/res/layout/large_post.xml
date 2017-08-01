@@ -20,14 +20,6 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <TextView
-            android:id="@+id/postTitle"
-            android:layout_width="match_parent"
-            android:layout_height="49dp"
-            android:text="Null"
-            android:textAlignment="center"
-            android:textSize="30sp" />
-
         <ImageView
             android:id="@+id/postImage"
             android:layout_width="match_parent"
