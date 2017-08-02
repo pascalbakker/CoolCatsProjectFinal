@@ -1,35 +1,31 @@
 package com.example.bakkerp.coolcatsproject;
 
-import android.app.Fragment;
-import android.app.LauncherActivity;
-import android.app.ListFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.toolbox.ImageRequest;
-import com.android.volley.toolbox.Volley;
-
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ViewPostsFragment extends Fragment {
     Bitmap defaultImage;
+    Bitmap currentImage;
     ListObject adapter;
     List<ListItem> list;
     ListView listView;
     View rootView;
     ImageView imageView;
+    Integer index;
 
 
     public ViewPostsFragment() {
@@ -41,22 +37,22 @@ public class ViewPostsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         defaultImage = BitmapFactory.decodeResource(getResources(), R.drawable.download);
-
-
+        imageView = (ImageView) getActivity().findViewById(R.id.imgPic);
         //The list of items being put into list
         list = new ArrayList<ListItem>();
-
+        index=0;
 
 
         //Initialize adapter for GridView
         adapter = new ListObject(getActivity(), 0 , list);
-        list.add(requestPost());
-        //startListView();
-
+        ListItem newListItem = new ListItem();
 
         /* Initialize Gridview */
         rootView = inflater.inflate(R.layout.fragment_view_posts, container, false);
         listView = (ListView) rootView.findViewById(R.id.ListView01);
+        imageView = (ImageView) rootView.findViewById(R.id.imageHolder);
+        startListView();
+
         listView.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
 
             @Override
@@ -65,6 +61,8 @@ public class ViewPostsFragment extends Fragment {
                 //LargePost largePost = new LargePost(itemToDisplay.image,itemToDisplay.name,itemToDisplay.comment);
 
                 Intent i = new Intent(getActivity(), LargePost.class);
+                i.putExtra("MyClass", itemToDisplay.url);
+
                 startActivity(i);
             }
         });
@@ -76,6 +74,8 @@ public class ViewPostsFragment extends Fragment {
                 // Add whatever code is needed to append new items to your AdapterView
                 loadNextDataFromApi(page);
                 // or loadNextDataFromApi(totalItemsCount);
+                adapter.notifyDataSetChanged();
+
                 return true; // ONLY if more data is actually being loaded; false otherwise.
             }
         });
@@ -83,10 +83,9 @@ public class ViewPostsFragment extends Fragment {
         return rootView;
     }
 
-
     // Append the next page of data into the adapter
     // This method probably sends out a network request and appends new data items to your adapter.
-    public void loadNextDataFromApi(int offset) {
+    private void loadNextDataFromApi(int offset) {
         // Send an API request to retrieve appropriate paginated data
         //  --> Send the request including an offset value (i.e `page`) as a query parameter.
         //  --> Deserialize and construct new model objects from the API response
@@ -103,40 +102,44 @@ public class ViewPostsFragment extends Fragment {
         adapter.notifyDataSetChanged();
     }
 
-    public void startListView(){
-        for(int i=0;i<11;i++){
+    private void startListView(){
+        for(int i=0;i<1;i++){
             list.add(requestPost());
+            adapter.notifyDataSetChanged();
         }
         adapter.notifyDataSetChanged();
     }
 
-    public ListItem requestPost(){
-        Integer index = 0;
-        System.out.println("server");
-        final RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        String imageurl ="http://httpbin.org/image/jpeg?name=" + index.toString();
-        ImageRequest imageRequest = new ImageRequest( imageurl,
-                //asynchronous request to the server
-                //to recieve from the server
-                new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap response) {
-                        //System.out.println(response);
-                        imageView.setImageBitmap(response);
-
-                    }
-                    //no response error
-                },0,0,null,null);
-        //adds the request to the server queue
-        //volley sends the request
+    private ListItem requestPost(){
+        ViewPostsFragment context = this;
         ListItem newListItem = new ListItem();
+        index=10;
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;
-        newListItem.image = defaultImage;
-        newListItem.name = "Test";
-        newListItem.comment= "2/2/2";
-        requestQueue.add(imageRequest);
+        //Source https://stackoverflow.com/questions/42879748/bitmap-is-null-when-convert-imageview-in-bitmap
+        String url ="http://18.220.32.41:3001/image?name="+index+".png";
+        Picasso.with(getActivity())
+                .load(url)
+                .resize(300,300)
+                .into(imageView, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        // Drawable is ready
+                        currentImage = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+                    }
+
+                    @Override
+                    public void onError() {
+
+                    }
+                });
+        newListItem.image=currentImage;
+        newListItem.name = "Test"+index.toString();
+        newListItem.comment= "5/8/17";
+        newListItem.url = url;
+        index++;
+
         return newListItem;
     }
 }
