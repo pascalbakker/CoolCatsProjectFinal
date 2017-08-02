@@ -34,7 +34,8 @@ public class LargePost extends AppCompatActivity implements Serializable{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.large_post);
-        String url = "http://18.220.32.41:3001/image?name="+(String) getIntent().getSerializableExtra("MyClass");
+        String url = (String) getIntent().getSerializableExtra("MyClass");
+        //String url = "http://18.220.32.41:3001/image?name="+(String) getIntent().getSerializableExtra("MyClass");
         ImageView imageView = (ImageView) findViewById(R.id.postImage);
 
         Picasso.with(this)
