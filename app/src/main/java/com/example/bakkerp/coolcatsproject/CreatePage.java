@@ -94,7 +94,27 @@ public class CreatePage extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                onSubmissionClicked();
+                tv = (EditText) findViewById(R.id.title);
+                tv1 = (EditText) findViewById(R.id.date);
+                tv2 = (EditText) findViewById(R.id.location);
+                imgTitle = tv.getText().toString();
+                date = tv1.getText().toString();
+                loc = tv2.getText().toString();
+
+                if(bitmap!=null||(!imgTitle.equals(""))||(!date.equals(""))||(!loc.equals("")))
+                    onSubmissionClicked();
+                else
+                {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(CreatePage.this);
+                    builder.setTitle("An image, a title, a date and a location are all required before submitting");
+                    builder.setNegativeButton("OK",new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {dialog.dismiss();
+                        }
+                    });
+                    builder.create();
+                    builder.show();
+                }
             }
         });
     }
@@ -171,12 +191,7 @@ public class CreatePage extends AppCompatActivity
     public void onSubmissionClicked() {
 
 
-        tv = (EditText) findViewById(R.id.title);
-        tv1 = (EditText) findViewById(R.id.date);
-        tv2 = (EditText) findViewById(R.id.location);
-        imgTitle = tv.getText().toString();
-        date = tv1.getText().toString();
-        loc = tv2.getText().toString();
+
         //Showing the progress dialog
         final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
