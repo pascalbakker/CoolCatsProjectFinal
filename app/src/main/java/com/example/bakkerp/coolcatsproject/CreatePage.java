@@ -47,8 +47,8 @@ public class CreatePage extends AppCompatActivity
     private Button btn1, btn2, btn3;
     private ImageButton btnX;
     private Bitmap bitmap;
+    private static final String UPLOAD_URL = "http://18.220.32.41:3001/post";
 
-    String UPLOAD_URL = "http://18.220.32.41:3001/post";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -106,7 +106,7 @@ public class CreatePage extends AppCompatActivity
                 else
                 {
                     AlertDialog.Builder builder = new AlertDialog.Builder(CreatePage.this);
-                    builder.setTitle("An image, a title, a date and a location are all required before submitting");
+                    builder.setTitle("An image, a title, a date and a location are all required before making a submission");
                     builder.setNegativeButton("OK",new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {dialog.dismiss();
@@ -189,9 +189,6 @@ public class CreatePage extends AppCompatActivity
     }
 
     public void onSubmissionClicked() {
-
-
-
         //Showing the progress dialog
         final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
         final RequestQueue requestQueue = Volley.newRequestQueue(this);
