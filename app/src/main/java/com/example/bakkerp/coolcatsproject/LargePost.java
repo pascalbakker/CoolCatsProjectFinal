@@ -32,7 +32,6 @@ public class LargePost extends AppCompatActivity implements Serializable{
     private String titleTitleFromPost;
     private ImageButton back;
     public LargePost() {
-
     }
 
     @Override
@@ -42,7 +41,7 @@ public class LargePost extends AppCompatActivity implements Serializable{
         String url = (String) getIntent().getSerializableExtra("MyClass");
         //String url = "http://18.220.32.41:3001/image?name="+(String) getIntent().getSerializableExtra("MyClass");
         ImageView imageView = (ImageView) findViewById(R.id.postImage);
-        back = (ImageButton) findViewById(R.id.back);
+        //back = (ImageButton) findViewById(R.id.back);
 
 
         Picasso.with(this)

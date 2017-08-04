@@ -26,6 +26,7 @@ public class ListItem{
     public String name;
     public String comment;
     public Button savePost;
+    public String location;
     public String url;
 }
 

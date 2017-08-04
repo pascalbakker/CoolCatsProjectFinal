@@ -188,6 +188,8 @@ public class ViewPostsFragment extends Fragment {
                                                 ListItem newListItem = new ListItem();
                                                 newListItem.image = currentImage;
                                                 newListItem.name = postTitle;
+                                                newListItem.location = postLocation;
+
                                                 newListItem.comment = postDate;
                                                 newListItem.url = theUrl;
                                                 //galleryIndex++;
@@ -222,6 +224,7 @@ public class ViewPostsFragment extends Fragment {
                         ListItem newListItem = new ListItem();
                         newListItem.image=currentImage;
                         newListItem.name = postTitle;
+                        newListItem.location = postLocation;
                         newListItem.comment= postDate;
                         newListItem.url = "None";
                         theUrl = newListItem.url;

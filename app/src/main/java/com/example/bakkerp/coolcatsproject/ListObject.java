@@ -54,12 +54,17 @@ public class ListObject extends ArrayAdapter<ListItem> {
         TextView comment;
         comment = (TextView) view.findViewById(R.id.comment);
         comment.setText(item.comment);
+        //Set location
+        TextView location;
+        location = (TextView) view.findViewById(R.id.location);
+        location.setText(item.location);
+
         Button saveButton;
         saveButton = (Button) view.findViewById(R.id.savePost);
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    Log.d("Writing",("http://18.220.32.41:3001/image?name="+itemURL));
+                    Log.d("Writing",(itemURL));
                     File f = v.getContext().getFileStreamPath("SavedPostsInternal.txt");
                     FileWriter fw = new FileWriter(f,true);
                     BufferedWriter bw = new BufferedWriter(fw);
