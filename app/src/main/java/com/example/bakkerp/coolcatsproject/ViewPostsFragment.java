@@ -145,7 +145,7 @@ public class ViewPostsFragment extends Fragment {
 
     private void requestPost(){
         ViewPostsFragment context = this;
-        theUrl = gallery[galleryIndex];
+        theUrl = "http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;

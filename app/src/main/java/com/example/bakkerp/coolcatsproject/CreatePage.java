@@ -9,13 +9,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -45,7 +47,6 @@ public class CreatePage extends AppCompatActivity
     private EditText tv, tv1, tv2;
     private String imgTitle, date, loc;
     private Button btn1, btn2, btn3;
-    private ImageButton btnX;
     private Bitmap bitmap;
     private static final String UPLOAD_URL = "http://18.220.32.41:3001/post";
 
@@ -60,16 +61,6 @@ public class CreatePage extends AppCompatActivity
         btn1 = (Button) findViewById(R.id.camera);
         btn2 = (Button) findViewById(R.id.library);
         btn3 = (Button) findViewById(R.id.submit);
-        btnX = (ImageButton) findViewById(R.id.close);
-
-        btnX.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                onClickClose();
-            }
-        });
 
         btn1.setOnClickListener(new View.OnClickListener()
         {
@@ -120,6 +111,23 @@ public class CreatePage extends AppCompatActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_create_page, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK)
@@ -147,27 +155,6 @@ public class CreatePage extends AppCompatActivity
                 imgPic.setImageBitmap(bitmap);
             }
         }
-    }
-
-    private void onClickClose() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(CreatePage.this);
-        builder.setTitle("Are you sure you want to close?");
-
-        builder.setPositiveButton("YES",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(CreatePage.this, HomePage.class);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton("NO",new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.create();
-        builder.show();
     }
 
     public void onImageGalleryClicked(View view) {
