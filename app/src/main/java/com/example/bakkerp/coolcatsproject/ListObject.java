@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ListObject extends ArrayAdapter<ListItem> {
     private LayoutInflater mInflater;
-    private String itemURL;
+    public String itemURL;
     public ListObject(Context context, int rid, List<ListItem> list){
         super(context, rid, list);
         mInflater =
@@ -35,7 +35,7 @@ public class ListObject extends ArrayAdapter<ListItem> {
     }
     public View getView(int position, View convertView, ViewGroup parent){
         // Retrieve data
-        final ListItem item = (ListItem)getItem(position);
+        ListItem item = (ListItem)getItem(position);
         itemURL = item.url;
         if(itemURL==null){
             Log.v("Error ","url is null");
@@ -59,12 +59,13 @@ public class ListObject extends ArrayAdapter<ListItem> {
         saveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    Log.d("Writing",item.url);
+                    Log.d("Writing",("http://18.220.32.41:3001/image?name="+itemURL));
                     File f = v.getContext().getFileStreamPath("SavedPostsInternal.txt");
                     FileWriter fw = new FileWriter(f,true);
                     BufferedWriter bw = new BufferedWriter(fw);
                     bw.write(itemURL);
                     bw.newLine();
+
                     bw.close();
                     fw.close();
                 } catch (IOException e) {

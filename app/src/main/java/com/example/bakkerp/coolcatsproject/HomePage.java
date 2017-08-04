@@ -73,7 +73,7 @@ public class HomePage extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, 							     R.string.drawer_close);
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
@@ -134,4 +134,5 @@ public class HomePage extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }

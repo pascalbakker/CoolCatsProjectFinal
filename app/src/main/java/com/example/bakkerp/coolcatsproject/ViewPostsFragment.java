@@ -36,7 +36,8 @@ public class ViewPostsFragment extends Fragment {
     ListView listView;
     View rootView;
     ImageView imageView;
-    String theUrl, postTitle, postDate, postLocation;
+    String theUrl;
+    String postTitle, postDate, postLocation;
     public String[] gallery = new String[100];
     public Integer galleryIndex = 0;
 
@@ -145,7 +146,7 @@ public class ViewPostsFragment extends Fragment {
 
     private void requestPost(){
         ViewPostsFragment context = this;
-        theUrl = gallery[galleryIndex];
+        theUrl = "http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
         //imageView.buildDrawingCache();
         //Bitmap bitmap = imageView.getDrawingCache();
         //newListItem.image = bitmap;
@@ -153,7 +154,6 @@ public class ViewPostsFragment extends Fragment {
         //============
 
         String url ="http://18.220.32.41:3001/image?name="+ gallery[galleryIndex];
-        System.out.println(url);
         Picasso.with(getActivity())
                 .load(url)
                 .into(imageView, new Callback() {
@@ -210,8 +210,7 @@ public class ViewPostsFragment extends Fragment {
                                     });
 
                             requestQueue.add(stringRequest);
-
-                       // }
+                        // }
                     }
 
                     @Override
@@ -232,7 +231,6 @@ public class ViewPostsFragment extends Fragment {
 
                     }
                 });
-
        /* if(postTitle.equals("")){
             return;
         }*/

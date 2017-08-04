@@ -40,22 +40,15 @@ public class ListObjectSaved extends ArrayAdapter<ListItemSaved> {
     }
     public View getView(int position, View convertView, ViewGroup parent){
         // Retrieve data
-        final ListItemSaved item = (ListItemSaved)getItem(position);
+        ListItemSaved item = (ListItemSaved)getItem(position);
         itemURL = item.url;
         // Use layout file to generate View
         View view = mInflater.inflate(R.layout.list_item_saved, null);
         // Set image
         ImageView image;
-        image = (ImageView)view.findViewById(R.id.image);
+        image = (ImageView)view.findViewById(R.id.image1);
         image.setImageBitmap(item.image);
         // Set user name
-        TextView name;
-        name = (TextView)view.findViewById(R.id.name);
-        name.setText(item.name);
-        // Set comment
-        TextView comment;
-        comment = (TextView) view.findViewById(R.id.comment);
-        comment.setText(item.comment);
         Button removeButton;
         removeButton = (Button) view.findViewById(R.id.removePost);
         removeButton.setOnClickListener(new View.OnClickListener() {
