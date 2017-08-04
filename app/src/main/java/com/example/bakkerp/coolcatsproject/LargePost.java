@@ -8,6 +8,8 @@ import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -49,12 +51,16 @@ public class LargePost extends AppCompatActivity implements Serializable{
 
     }
 
-
-    public void onClickBack(View view)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-        Intent intent = new Intent(this, HomePage.class);
-        startActivity(intent);
+        getMenuInflater().inflate(R.menu.menu_large_post, menu);
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        return super.onOptionsItemSelected(item);
+    }
 }
-
