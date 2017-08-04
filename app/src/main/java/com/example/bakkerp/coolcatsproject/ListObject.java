@@ -2,10 +2,13 @@ package com.example.bakkerp.coolcatsproject;
 
 import android.app.LauncherActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +29,7 @@ public class ListObject extends ArrayAdapter<ListItem> {
     public View getView(int position, View convertView, ViewGroup parent){
         // Retrieve data
         ListItem item = (ListItem)getItem(position);
+        final String itemURL = item.url;
         // Use layout file to generate View
         View view = mInflater.inflate(R.layout.list_item, null);
         // Set image
@@ -40,6 +44,14 @@ public class ListObject extends ArrayAdapter<ListItem> {
         TextView comment;
         comment = (TextView) view.findViewById(R.id.comment);
         comment.setText(item.comment);
+        Button saveButton;
+        saveButton = (Button) view.findViewById(R.id.savePost);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                SavedPostsFragment.add(itemURL);
+            }
+        });
+        item.savePost = saveButton;
         return view;
     }
 }
